@@ -12,14 +12,14 @@ levels=[
      "."*40,
      "."*40,
      "."*40,
-     "..................C.....................",
+     "...................C....................",
      "."*40,
      "...............S...S....................",
      "..............#######...................",
      "."*40,
      "."*40,
-     ".........S..............................",
-     ".........##..............###............",
+     "..........S.............................",
+     ".........###.............###............",
      "."*40,
      "."*40,
      "."*40,
@@ -36,6 +36,7 @@ in_air=False
 blocks=[]
 spikes=[]
 coins=[]
+start=[]
 rot=False
 
 screen= pygame.display.set_mode((800,450))
@@ -49,6 +50,11 @@ player_img = pygame.transform.scale(player_img,(32,32))
 blockimg = pygame.image.load("images/Blocks/Idle.png").convert_alpha()
 blockimg = pygame.transform.scale(blockimg,(20,20))
 
+spikeimg = pygame.image.load("images/Blocks/spike.png").convert_alpha()
+spikeimg = pygame.transform.scale(spikeimg,(20,20))
+
+startimg = pygame.image.load("images/Blocks/start.png").convert_alpha()
+startimg = pygame.transform.scale(startimg,(40,40))
 
 running=True
 
@@ -68,13 +74,18 @@ for y,line in enumerate(levels[levelno]):
             elif c=="C":
                 coins.append(pygame.Rect(x*size,y*size,size,size))
             elif c=="P":
+                playerreturnx=x*size
+                playerreturny=y*size
                 player=pygame.Rect(x*size,y*size-15,32,32)
+                start.append(pygame.Rect(x*size,y*size-20,size,size))
 
 
 while running:
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             running=False
+
+
 
     press=pygame.key.get_pressed()
     if press[pygame.K_w] or press[pygame.K_UP]:
@@ -91,15 +102,15 @@ while running:
             player_img=pygame.transform.flip(player_img,True,False)
             
             rot=True
-        player.x-=8
+        player.x-=9
     if press[pygame.K_d] or press[pygame.K_RIGHT]:
-        player.x+=8
+        player.x+=9
         if rot:
             player_img=pygame.transform.flip(player_img,True,False)
             rot=False
     
     player.y+=g
-    g+=0.1
+    g+=0.8
 
     screen.fill((20,20,40))
 
@@ -113,13 +124,27 @@ while running:
                 player.bottom=b.top+1
                 jump=False
                 in_air=False
+                player_img= pygame.image.load("images/Main Characters\minja Frog\Idle (32x32).png").convert_alpha()
+
             else:
                 g=2
-                player.y+=(10-g*5)+8
+                player.y+=(40-g*5)+8
 
     if jump:
-        player.y-=(10-g*5)
+        if (40-g*5)>0:
+            player_img= pygame.image.load("images/Main Characters\minja Frog\Jump (32x32).png").convert_alpha()
+        elif (40-g*5)<0:
+            player_img= pygame.image.load("images/Main Characters\minja Frog\Fall (32x32).png").convert_alpha()
 
+        player.y-=(40-g*5)
+
+    for s in spikes:
+        screen.blit(spikeimg,s)
+        if player.colliderect(s):
+            player=pygame.Rect(playerreturnx,playerreturny-15,32,32)
+
+    for st in start:
+        screen.blit(startimg,st)
 
     pygame.display.flip()
     clock.tick(20)
