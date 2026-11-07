@@ -47,6 +47,9 @@ jump=False
 player_img= pygame.image.load("images/Main Characters\minja Frog\Idle (32x32).png").convert_alpha()
 player_img = pygame.transform.scale(player_img,(32,32))
 
+bg= pygame.image.load("images/Background/bg2.png").convert_alpha()
+bg = pygame.transform.scale(bg,(800,450))
+
 blockimg = pygame.image.load("images/Blocks/Idle.png").convert_alpha()
 blockimg = pygame.transform.scale(blockimg,(20,20))
 
@@ -113,6 +116,7 @@ while running:
     g+=0.8
 
     screen.fill((20,20,40))
+    screen.blit(bg,(0,0))
 
     screen.blit(player_img,player)
 
