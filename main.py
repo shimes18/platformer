@@ -73,14 +73,27 @@ coinimg = pygame.transform.scale(coinimg,(40,40))
 endimg= pygame.image.load("images/Blocks/End.png").convert_alpha()
 endimg = pygame.transform.scale(endimg,(40,40))
 
+bgsound= pygame.mixer.Sound("sounds/bg.ogg")
+bgsound.set_volume(0.6)
+jumpsound= pygame.mixer.Sound("sounds/jump.ogg")
+jumpsound.set_volume(0.8)
+
+deathsfx= pygame.mixer.Sound("sounds/death1.ogg")
+deathsfx.set_volume(0.8)
+revivesfx= pygame.mixer.Sound("sounds/revive.ogg")
+revivesfx.set_volume(0.8)
+
+bgsound.play(-1)
+
 running=True
 
+death=False
 levelno=0
 
 timer=0
 g=5
 clock = pygame.time.Clock()
-
+fps=20
 
 for y,line in enumerate(levels[levelno]):
         for x,c in enumerate(line):
@@ -107,7 +120,7 @@ while running:
         if event.type==pygame.QUIT:
             running=False
 
-
+    timer+=1
 
     press=pygame.key.get_pressed()
     if press[pygame.K_w] or press[pygame.K_UP]:
@@ -117,6 +130,7 @@ while running:
             timer=0
             in_air=True
             g=0
+            jumpsound.play()
 
     if not rot:
         player_img=pygame.transform.flip(player_img,False,False)
@@ -164,12 +178,26 @@ while running:
     for s in spikes:
         screen.blit(spikeimg,s)
         if player.colliderect(s):
-            player=pygame.Rect(playerreturnx,playerreturny-15,32,32)
+            death=True
+            timer=0
+            deathsfx.play()
+            player.y-=(10000+g*5)
+            g=0
 
     for rs in rspikes:
         screen.blit(rspikeimg,rs)
-        if player.colliderect(rs):
-            player=pygame.Rect(playerreturnx,playerreturny-15,32,32)
+        if player.colliderect(rs) and not death:
+            timer=0
+            death=True
+            player.y-=(10000+g*5)
+            g=0
+            deathsfx.play()
+
+    if timer>fps*1.5 and death:
+        g=0
+        revivesfx.play()
+        death=False
+        player=pygame.Rect(playerreturnx,playerreturny,32,32)
 
 
     for st in start:
