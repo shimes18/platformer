@@ -39,6 +39,7 @@ coins=[]
 start=[]
 rot=False
 rspikes=[]
+end=[]
 
 screen= pygame.display.set_mode((800,450))
 
@@ -62,14 +63,15 @@ spikeimg = pygame.transform.scale(spikeimg,(20,20))
 
 rspikeimg = pygame.transform.flip(spikeimg,False,True)
 
-startimg = pygame.image.load("images/Blocks/start.png").convert_alpha()
+startimg = pygame.image.load("images/Blocks/Start.png").convert_alpha()
 startimg = pygame.transform.scale(startimg,(40,40))
 
 
 coinimg = pygame.image.load("images/Items/Apple.png").convert_alpha()
 coinimg = pygame.transform.scale(coinimg,(40,40))
 
-
+endimg= pygame.image.load("images/Blocks/End.png").convert_alpha()
+endimg = pygame.transform.scale(endimg,(40,40))
 
 running=True
 
@@ -173,6 +175,8 @@ while running:
 
     for c in coins:
         screen.blit(coinimg,(c.x-10,c.y,c.h,c.w))
+        if player.colliderect(c):
+            print("TRUE")
 
     pygame.display.flip()
     clock.tick(20)
