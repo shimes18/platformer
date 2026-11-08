@@ -97,6 +97,9 @@ for y,line in enumerate(levels[levelno]):
                 start.append(pygame.Rect(x*size,y*size-20,size,size))
             elif c=="s":
                 rspikes.append(pygame.Rect(x*size,y*size,size,size))
+            elif c=="E":
+                end.append(pygame.Rect(x*size,y*size-20
+                                       ,size,size))
 
 
 while running:
@@ -115,17 +118,16 @@ while running:
             in_air=True
             g=0
 
+    if not rot:
+        player_img=pygame.transform.flip(player_img,False,False)
+    else:
+        player_img=pygame.transform.flip(player_img,True,False)
 
     if press[pygame.K_a] or press[pygame.K_LEFT]:
-        if not rot:
-            player_img=pygame.transform.flip(player_img,True,False)
-            
         rot=True
         player.x-=9
     if press[pygame.K_d] or press[pygame.K_RIGHT]:
         player.x+=9
-        if rot:
-            player_img=pygame.transform.flip(player_img,True,False)
         rot=False
     
     player.y+=g
@@ -177,6 +179,14 @@ while running:
         screen.blit(coinimg,(c.x-10,c.y,c.h,c.w))
         if player.colliderect(c):
             print("TRUE")
+
+    for e in end:
+        screen.blit(endimg,e)
+
+    if (player.x>800):
+        player.x=780
+    if (player.x<0):
+        player.x=10
 
     pygame.display.flip()
     clock.tick(20)
