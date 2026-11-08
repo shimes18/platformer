@@ -12,9 +12,9 @@ levels=[
      "B"+"."*38+"B",
      "B"+"."*38+"B",
      "B"+"."*38+"B",
-     "B..................C...................B",
+     "B.................C....................B",
      "B"+"."*38+"B",
-     "B..............S...S...................B",
+     "B..............SSSS....................B",
      "B.............#######..................B",
      "B"+"."*38+"B",
      "B"+"."*38+"B",
@@ -48,7 +48,7 @@ game_running=True
 jump=False
 
 player_img= pygame.image.load("images/Main Characters\minja Frog\Idle (32x32).png").convert_alpha()
-player_img = pygame.transform.scale(player_img,(32,32))
+player_img = pygame.transform.scale(player_img,(23,26))
 
 bg= pygame.image.load("images/Background/bg2.png").convert_alpha()
 bg = pygame.transform.scale(bg,(800,450))
@@ -139,7 +139,7 @@ for y,line in enumerate(levels[levelno]):
             elif c=="P":
                 playerreturnx=x*size
                 playerreturny=y*size
-                player=pygame.Rect(x*size,y*size-15,32,32)
+                player=pygame.Rect(x*size,y*size,32,32)
                 start.append(pygame.Rect(x*size,y*size-20,size,size))
             elif c=="s":
                 rspikes.append(pygame.Rect(x*size,y*size,size,size))
@@ -160,7 +160,11 @@ while running:
             running=False
 
     timer+=1
+    screen.fill((20,20,40))
+    screen.blit(bg,(0,0))
+    screen.blit(bg2,(0,0))
 
+    screen.blit(player_img,player)
     if not level_finish:
         press=pygame.key.get_pressed()
         if press[pygame.K_w] or press[pygame.K_UP]:
@@ -187,11 +191,7 @@ while running:
         player.y+=g
         g+=0.8
 
-        screen.fill((20,20,40))
-        screen.blit(bg,(0,0))
-        screen.blit(bg2,(0,0))
 
-        screen.blit(player_img,player)
         in_air=True
         for b in blocks:
             screen.blit(blockimg,b)        
@@ -201,7 +201,7 @@ while running:
                     player.bottom=b.top+1
                     jump=False
                     in_air=False
-                    player_img= pygame.image.load("images/Main Characters\minja Frog\Idle (32x32).png").convert_alpha()
+                    player_img= pygame.image.load("images/Main Characters/Idle (32x32).png").convert_alpha()
 
                 else:
                     g=0
@@ -218,10 +218,11 @@ while running:
         for s in spikes:
             screen.blit(spikeimg,s)
             if player.colliderect(s):
+                g=2
                 death=True
                 timer=0
                 deathsfx.play()
-                player.y+=(1000+g*5)
+                player.y+=(15+g*5)
                 g=0
 
         for rs in rspikes:
@@ -229,15 +230,20 @@ while running:
             if player.colliderect(rs) and not death:
                 timer=0
                 death=True
-                player.y+=(1000+g*5)
+                player.y+=(15+g*5)
                 g=0
                 deathsfx.play()
+        
+        if timer>fps and death:
+            revivesfx.play()
 
         if timer>fps*1.5 and death:
             g=0
-            revivesfx.play()
-            death=False
+
+
             player=pygame.Rect(playerreturnx,playerreturny,32,32)
+            death=False
+
 
 
         for st in start:
@@ -260,8 +266,13 @@ while running:
             player.x=780
         if (player.x<20):
             player.x=20
-        if (player.y<20):
-            player.y=20
+        if (player.y<=20):
+            g=0
+            player.y=30
+
+        if (player.y>430):
+            player=pygame.Rect(playerreturnx,playerreturny,32,32)
+
 
     if level_finish:
         for lf in tblocks:
