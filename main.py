@@ -43,6 +43,7 @@ rot="Temp"
 rspikes=[]
 end=[]
 border=[]
+hp=[]
 
 screen= pygame.display.set_mode((800,450))
 
@@ -129,7 +130,7 @@ tblocks=[]
 timer=0
 g=5
 clock = pygame.time.Clock()
-level_finish=False
+level_finish=True
 fps=20
 
 for y,line in enumerate(levels[levelno]):
@@ -164,6 +165,17 @@ while running:
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             running=False
+        if level_finish and event.type==pygame.KEYDOWN:
+            if event.key==pygame.K_r:
+                level_finish=False
+            if event.key==pygame.K_n:
+                levelno+=1
+                level_finish=False
+            if event.unicode.isdigit():
+                    levelno= int(event.unicode)-1
+                    level_finish=False
+            print(levelno)
+        
 
     timer+=1
     screen.fill((20,20,40))
@@ -265,6 +277,7 @@ while running:
             screen.blit(coinimg,(c.x-10,c.y,c.h,c.w))
             if player.colliderect(c):
                 print("TRUE")
+                c.x=1000
 
         for e in end:
             screen.blit(endimg,e)
@@ -295,13 +308,16 @@ while running:
         lft= font.render("Level "+ str(levelno+1) + " complete",True,(0,0,0))
         nlt= font.render("Press N to go to next level",True,(0,0,0))
         rlt= font.render("Press R to Replay level",True,(0,0,0))
+        clt= font.render("Press the level you want to go to on keyboard (1-9)",True,(0,0,0))
+
         for lf in tblocks:
             screen.blit(blockimg,lf)    
         for C in bgtext:
             pygame.draw.rect(screen,(255,255,255),C)  
-        screen.blit(lft,(350,150))
-        screen.blit(nlt,(350,200))
-        screen.blit(rlt,(350,250))
+        screen.blit(lft,(290,130))
+        screen.blit(nlt,(250,180))
+        screen.blit(rlt,(265,230))
+        screen.blit(clt,(130,280))
 
     pygame.display.flip()
     clock.tick(20)
