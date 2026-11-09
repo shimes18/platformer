@@ -43,7 +43,7 @@ rot="Temp"
 rspikes=[]
 end=[]
 border=[]
-hp=[]
+hp=1
 
 screen= pygame.display.set_mode((800,450))
 
@@ -81,6 +81,9 @@ startimg = pygame.transform.scale(startimg,(40,40))
 
 coinimg = pygame.image.load("images/Items/Apple.png").convert_alpha()
 coinimg = pygame.transform.scale(coinimg,(40,40))
+
+hpimg = pygame.image.load("images/Items/heart.png").convert_alpha()
+hpimg = pygame.transform.scale(hpimg,(15.75,13.5))
 
 endimg= pygame.image.load("images/Blocks/End.png").convert_alpha()
 endimg = pygame.transform.scale(endimg,(40,40))
@@ -241,31 +244,35 @@ while running:
             screen.blit(spikeimg,s)
             pygame.draw.rect(screen,(0,0,0),s,2)
             if player.colliderect(s) and not death:
-                player.y-=50
                 g=2
                 timer=0
                 deathsfx.play()
                 player.y+=(35+g*5)
                 g=0
-                death=True
+                hp-=1
+                
 
 
         for rs in rspikes:
             screen.blit(rspikeimg,rs)
             if player.colliderect(rs) and not death:
+                g=2
                 timer=0
-                player.y+=(20+g*5)
-                g=0
                 deathsfx.play()
-                death=True
+                player.y+=(35+g*5)
+                g=0
+                hp-=1
 
+        if hp==0:
+            death=True
         
         if timer>0.8*fps and death:
             revivesfx.play()
 
         if timer>fps*1.5 and death:
             g=0
-            player=pygame.Rect(playerreturnx,playerreturny-40,23,26)
+            player=pygame.Rect(playerreturnx,playerreturny-10,23,26)
+            hp+=1
             death=False
 
 
@@ -278,6 +285,7 @@ while running:
             if player.colliderect(c):
                 print("TRUE")
                 c.x=1000
+                hp+=1
 
         for e in end:
             screen.blit(endimg,e)
@@ -303,6 +311,10 @@ while running:
 
 
         pygame.draw.rect(screen,(0,0,0),player,2)
+
+        for i in range(hp):
+            screen.blit(hpimg,(i*20+1,0,20,20))
+        
 
     if level_finish:
         lft= font.render("Level "+ str(levelno+1) + " complete",True,(0,0,0))
