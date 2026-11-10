@@ -26,7 +26,30 @@ levels=[
      "B"+"."*38+"B",
      "B...............................S......B",
      "B.P...S........................###.....B",
-     "B.#####..............................SEB",
+     "B.#####...............................EB",
+     "B....................................S.B",
+     "B"+"."*38+"B",
+     "BSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSB",
+     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+    ],
+    ["."*40,
+     "B"+"."*38+"B",
+     "B"+"."*38+"B",
+     "B"+"."*38+"B",
+     "B"+"."*38+"B",
+     "B.................C....................B",
+     "B"+"."*38+"B",
+     "B..............S..S....................B",
+     "B..P..........#######..................B",
+     "B.#####..............................S.B",
+     "B"+"."*38+"B",
+     "B"+"."*38+"B",
+     "B.........S................S...........B",
+     "B........###.............###...........B",
+     "B........ss............................B",
+     "B"+"."*38+"B",
+     "B...............................S.....EB",
+     "B.....S........................###.....B",
      "B......................................B",
      "B"+"."*38+"B",
      "BSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSB",
@@ -177,6 +200,8 @@ while running:
             if event.unicode.isdigit():
                     levelno= int(event.unicode)-1
                     level_finish=False
+                    player=pygame.Rect(playerreturnx,playerreturny-10,23,26)
+                    load(levelno)
             print(levelno)
         
 
@@ -244,11 +269,11 @@ while running:
             screen.blit(spikeimg,s)
             pygame.draw.rect(screen,(0,0,0),s,2)
             if player.colliderect(s) and not death:
+                player.y-=75
                 g=2
                 timer=0
                 deathsfx.play()
-                player.y+=(35+g*5)
-                g=0
+                player.y+=(55+g*5)
                 hp-=1
                 
 
@@ -259,11 +284,10 @@ while running:
                 g=2
                 timer=0
                 deathsfx.play()
-                player.y+=(35+g*5)
-                g=0
+                player.y+=(55+g*5)
                 hp-=1
 
-        if hp==0:
+        if hp<=0:
             death=True
         
         if timer>0.8*fps and death:
@@ -273,6 +297,7 @@ while running:
             g=0
             player=pygame.Rect(playerreturnx,playerreturny-10,23,26)
             hp+=1
+            g=0
             death=False
 
 
@@ -303,10 +328,6 @@ while running:
                     player.y+=5
 
         if player.y>2050:
-            timer=0
-            player.y+=(20+g*5)
-            g=0
-            deathsfx.play()
             death=True
 
 
