@@ -9,7 +9,7 @@ font = pygame.font.Font(None,32)
 # C= coin , S = Spikes, #=platform , P = Player
 
 levels=[
-    ["."*40,
+    ["B"+"."*38+"B",
      "B"+"."*38+"B",
      "B"+"."*38+"B",
      "B"+"."*38+"B",
@@ -32,7 +32,7 @@ levels=[
      "BSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSB",
      "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
     ],
-    ["."*40,
+    ["B"+"."*38+"B",
      "B"+"."*38+"B",
      "B"+"."*38+"B",
      "B"+"."*38+"B",
@@ -40,16 +40,16 @@ levels=[
      "B.................C....................B",
      "B"+"."*38+"B",
      "B..............S..S....................B",
-     "B..P..........#######..................B",
-     "B.#####..............................S.B",
+     "B..P..........#######...S....S.........B",
+     "B.#####.................B....B.......S.B",
      "B"+"."*38+"B",
      "B"+"."*38+"B",
-     "B.........S................S...........B",
-     "B........###.............###...........B",
-     "B........ss............................B",
      "B"+"."*38+"B",
+     "B..........................S...........B",
+     "B........................###...........B",
+     "B......................................B",
      "B...............................S.....EB",
-     "B.....S........................###.....B",
+     "B..............................###.....B",
      "B......................................B",
      "B"+"."*38+"B",
      "BSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSB",
@@ -149,6 +149,8 @@ textbg=["."*40,
 
 running=True
 
+player=pygame.Rect(0,0,0,0)
+
 death=False
 levelno=0
 
@@ -156,12 +158,14 @@ tblocks=[]
 timer=0
 g=5
 clock = pygame.time.Clock()
-level_finish=True
+level_finish=False
 fps=20
+
 playerreturnx=0
 playerreturny=0
 
 def load(levelno):
+    global player,playerreturnx,playerreturny
     for y,line in enumerate(levels[levelno]):
             for x,c in enumerate(line):
                 if c=="#":
@@ -189,6 +193,7 @@ def load(levelno):
             if c=="C":
                 bgtext.append(pygame.Rect(x*size,y*size,size,size))
 
+load(1)
 
 while running:
     for event in pygame.event.get():
@@ -197,16 +202,20 @@ while running:
         if level_finish and event.type==pygame.KEYDOWN:
             if event.key==pygame.K_r:
                 level_finish=False
+                load(levelno)
+
             if event.key==pygame.K_n:
                 levelno+=1
                 level_finish=False
+                load(levelno)
+
             if event.unicode.isdigit():
                     levelno= int(event.unicode)-1
                     level_finish=False
                     player=pygame.Rect(playerreturnx,playerreturny-10,23,26)
                     load(levelno)
             print(levelno)
-        
+
 
     timer+=1
     screen.fill((20,20,40))
@@ -351,7 +360,7 @@ while running:
         border.clear()
         coins.clear()
         start.clear()
-        player.clear()
+        spikes.clear()
 
         for lf in tblocks:
             screen.blit(blockimg,lf)    
@@ -363,5 +372,5 @@ while running:
         screen.blit(clt,(130,280))
 
     pygame.display.flip()
-    clock.tick(20)
+    clock.tick(fps)
 pygame.quit()
