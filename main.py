@@ -158,33 +158,36 @@ g=5
 clock = pygame.time.Clock()
 level_finish=True
 fps=20
+playerreturnx=0
+playerreturny=0
 
-for y,line in enumerate(levels[levelno]):
+def load(levelno):
+    for y,line in enumerate(levels[levelno]):
+            for x,c in enumerate(line):
+                if c=="#":
+                    blocks.append(pygame.Rect(x*size,y*size,size,size))
+                elif c=="S":
+                    spikes.append(pygame.Rect(x*size,y*size,size,size))            
+                elif c=="C":
+                    coins.append(pygame.Rect(x*size,y*size,size,size))
+                elif c=="P":
+                    playerreturnx=x*size
+                    playerreturny=y*size
+                    player=pygame.Rect(x*size,y*size,23,26)
+                    start.append(pygame.Rect(x*size,y*size-20,size,size))
+                elif c=="s":
+                    rspikes.append(pygame.Rect(x*size,y*size,size,size))
+                elif c=="E":
+                    end.append(pygame.Rect(x*size,y*size-20,size,size))
+                elif c=="B":
+                    border.append(pygame.Rect(x*size,y*size,size,size))
+
+    for y,line in enumerate(textbg):
         for x,c in enumerate(line):
             if c=="#":
-                blocks.append(pygame.Rect(x*size,y*size,size,size))
-            elif c=="S":
-                spikes.append(pygame.Rect(x*size,y*size,size,size))            
-            elif c=="C":
-                coins.append(pygame.Rect(x*size,y*size,size,size))
-            elif c=="P":
-                playerreturnx=x*size
-                playerreturny=y*size
-                player=pygame.Rect(x*size,y*size,23,26)
-                start.append(pygame.Rect(x*size,y*size-20,size,size))
-            elif c=="s":
-                rspikes.append(pygame.Rect(x*size,y*size,size,size))
-            elif c=="E":
-                end.append(pygame.Rect(x*size,y*size-20,size,size))
-            elif c=="B":
-                border.append(pygame.Rect(x*size,y*size,size,size))
-
-for y,line in enumerate(textbg):
-    for x,c in enumerate(line):
-        if c=="#":
-            tblocks.append(pygame.Rect(x*size,y*size,size,size))
-        if c=="C":
-            bgtext.append(pygame.Rect(x*size,y*size,size,size))
+                tblocks.append(pygame.Rect(x*size,y*size,size,size))
+            if c=="C":
+                bgtext.append(pygame.Rect(x*size,y*size,size,size))
 
 
 while running:
@@ -342,6 +345,13 @@ while running:
         nlt= font.render("Press N to go to next level",True,(0,0,0))
         rlt= font.render("Press R to Replay level",True,(0,0,0))
         clt= font.render("Press the level you want to go to on keyboard (1-9)",True,(0,0,0))
+        rspikes.clear()
+        blocks.clear()
+        end.clear()
+        border.clear()
+        coins.clear()
+        start.clear()
+        player.clear()
 
         for lf in tblocks:
             screen.blit(blockimg,lf)    
