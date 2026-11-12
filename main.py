@@ -40,8 +40,8 @@ levels=[
      "B.................C....................B",
      "B"+"."*38+"B",
      "B..............S..S....................B",
-     "B..P..........#######...S....S.........B",
-     "B.#####.................B....B.......S.B",
+     "B..P..........#######...S..............B",
+     "B.#####.................B..............B",
      "B"+"."*38+"B",
      "B"+"."*38+"B",
      "B"+"."*38+"B",
@@ -54,7 +54,30 @@ levels=[
      "B"+"."*38+"B",
      "BSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSB",
      "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
-    ]
+    ],
+    ["B"+"."*38+"B",
+         "B"+"."*38+"B",
+         "B"+"."*38+"B",
+         "B"+"."*38+"B",
+         "B"+"."*38+"B",
+         "B......................###.#l.........rB",
+         "B...........................#l........rB",
+         "B..............SP.S..........#l.......rB",
+         "B.............#####.....S.....#l......rB",
+         "B.......................B......#l.....rB",
+         "B...............................#l....rB",
+         "B................................#l...rB",
+         "B..........S......................#...rB",
+         "B........###...............S.......##..B",
+         "B........sss.............###.........E.B",
+         "B......................................B",
+         "B......................................B",
+         "B...S..................................B",
+         "B.###..................................B",
+         "B"+"."*38+"B",
+         "BSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSB",
+         "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+        ]
 ]
 
 in_air=False
@@ -66,7 +89,7 @@ rot="Temp"
 rspikes=[]
 end=[]
 border=[]
-hp=1
+hp=5
 
 screen= pygame.display.set_mode((800,450))
 
@@ -97,6 +120,8 @@ spikeimg = pygame.image.load("images/Blocks/spike.png").convert_alpha()
 spikeimg = pygame.transform.scale(spikeimg,(20,20))
 
 rspikeimg = pygame.transform.flip(spikeimg,False,True)
+lspikeimg = pygame.transform.rotate(spikeimg,270)
+l2spikeimg = pygame.transform.rotate(spikeimg,90)
 
 startimg = pygame.image.load("images/Blocks/Start.png").convert_alpha()
 startimg = pygame.transform.scale(startimg,(40,40))
@@ -152,14 +177,18 @@ running=True
 player=pygame.Rect(0,0,0,0)
 
 death=False
-levelno=0
+levelno=1
 
 tblocks=[]
 timer=0
 g=5
 clock = pygame.time.Clock()
-level_finish=False
+level_finish=True
+game_over=False
 fps=20
+
+lspikes=[]
+l2spikes=[]
 
 playerreturnx=0
 playerreturny=0
@@ -181,6 +210,10 @@ def load(levelno):
                     start.append(pygame.Rect(x*size,y*size-20,size,size))
                 elif c=="s":
                     rspikes.append(pygame.Rect(x*size,y*size,size,size))
+                elif c=="r":
+                    l2spikes.append(pygame.Rect(x*size,y*size,size,size))
+                elif c=="l":
+                    lspikes.append(pygame.Rect(x*size,y*size,size,size))
                 elif c=="E":
                     end.append(pygame.Rect(x*size,y*size-20,size,size))
                 elif c=="B":
@@ -215,6 +248,11 @@ while running:
                     player=pygame.Rect(playerreturnx,playerreturny-10,23,26)
                     load(levelno)
             print(levelno)
+
+        if game_over and event.type==pygame.KEYDOWN and event.key==pygame.K_r:
+            hp=5
+            load(levelno)
+            game_over=False
 
 
     timer+=1
@@ -287,6 +325,7 @@ while running:
                 deathsfx.play()
                 player.y+=(55+g*5)
                 hp-=1
+                death=True
                 
 
 
@@ -298,9 +337,48 @@ while running:
                 deathsfx.play()
                 player.y+=(55+g*5)
                 hp-=1
+                death=True
+
+        for rs in lspikes:
+            screen.blit(lspikeimg,rs)
+            if player.colliderect(rs) and not death:
+                g=2
+                timer=0
+                deathsfx.play()
+                player.y+=(55+g*5)
+                hp-=1
+                death=True
+        for rs in l2spikes:
+            screen.blit(l2spikeimg,rs)
+            if player.colliderect(rs) and not death:
+                g=2
+                timer=0
+                deathsfx.play()
+                player.y+=(55+g*5)
+                hp-=1
+                death=True
 
         if hp<=0:
-            death=True
+            levelno=0        
+            lft= font.render("You died",True,(0,0,0))
+            rlt= font.render("Press R to Restart",True,(0,0,0))
+            rspikes.clear()
+            blocks.clear()
+            end.clear()
+            border.clear()
+            coins.clear()
+            start.clear()
+            spikes.clear()        
+            lspikes.clear()
+            l2spikes.clear()
+
+            for lf in tblocks:
+                screen.blit(blockimg,lf)    
+            for C in bgtext:
+                pygame.draw.rect(screen,(255,255,255),C)  
+            screen.blit(lft,(290,130))
+            screen.blit(rlt,(265,230))
+            game_over=True
         
         if timer>0.8*fps and death:
             revivesfx.play()
@@ -308,7 +386,6 @@ while running:
         if timer>fps*1.5 and death:
             g=0
             player=pygame.Rect(playerreturnx,playerreturny-10,23,26)
-            hp+=1
             g=0
             death=False
 
@@ -353,7 +430,6 @@ while running:
         lft= font.render("Level "+ str(levelno+1) + " complete",True,(0,0,0))
         nlt= font.render("Press N to go to next level",True,(0,0,0))
         rlt= font.render("Press R to Replay level",True,(0,0,0))
-        clt= font.render("Press the level you want to go to on keyboard (1-9)",True,(0,0,0))
         rspikes.clear()
         blocks.clear()
         end.clear()
@@ -361,6 +437,8 @@ while running:
         coins.clear()
         start.clear()
         spikes.clear()
+        lspikes.clear()
+        l2spikes.clear()
 
         for lf in tblocks:
             screen.blit(blockimg,lf)    
@@ -369,7 +447,6 @@ while running:
         screen.blit(lft,(290,130))
         screen.blit(nlt,(250,180))
         screen.blit(rlt,(265,230))
-        screen.blit(clt,(130,280))
 
     pygame.display.flip()
     clock.tick(fps)
