@@ -126,6 +126,29 @@ levels=[
      "B.............##.......................B",
      "BSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSB",
      "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+    ],
+    ["B......................................B",
+     "B......................................B",
+     "B......................................B",
+     "B......................................B",
+     "B..P...................................B",
+     "B.###.########.........................B",
+     "B.....*lssssss.........................B",
+     "B.....*l...............................B",
+     "B.....*l...............................B",
+     "B.....*l...............................B",
+     "B.....########.........................B",
+     "B.........*lss.........................B",
+     "B.........*l...........................B",
+     "B.........*l...........................B",
+     "B.........*l...........................B",
+     "B.........*l...........................B",
+     "B..........###.........................B",
+     "B..E...................................B",
+     "B......................................B",
+     "B......................................B",
+     "BSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSB",
+     "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
     ]
 ]
 
@@ -226,7 +249,7 @@ running=True
 player=pygame.Rect(0,0,0,0)
 
 death=False
-levelno=3
+levelno=4
 
 tblocks=[]
 timer=0
@@ -239,6 +262,8 @@ fps=20
 lspikes=[]
 l2spikes=[]
 
+lblocks=[]
+
 playerreturnx=0
 playerreturny=0
 
@@ -248,6 +273,8 @@ def load(levelno):
             for x,c in enumerate(line):
                 if c=="#":
                     blocks.append(pygame.Rect(x*size,y*size,size,size))
+                elif c=="*":
+                    lblocks.append(pygame.Rect(x*size,y*size,size,size))
                 elif c=="S":
                     spikes.append(pygame.Rect(x*size,y*size,size,size))            
                 elif c=="C":
@@ -355,6 +382,10 @@ while running:
                 else:
                     g=0
                     player.y+=(40-g*5)+8
+
+        for b in lblocks:
+            lblockimg=pygame.transform.rotate(blockimg,90)
+            screen.blit(lblockimg,b)
 
         if jump:
             if (40-g*5)>0:
