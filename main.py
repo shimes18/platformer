@@ -92,7 +92,7 @@ levels=[
      "B.............#####.....S.....#l......rB",
      "B.......................B......#l.....rB",
      "B...............................#l....rB",
-     "B................................#l...rB",
+     "B................................#....rB",
      "B..........S......................#...rB",
      "B........###.......................##..B",
      "B........sss.........................E.B",
@@ -109,7 +109,7 @@ levels=[
      "B......................................B",
      "B..............C.......................B",
      "B.........................###..........B",
-     "B...........S..SS..S.......sss..........B",
+     "B...........S..SS..S......sss..........B",
      "B..........#########...................B",
      "B..........sssssssss...................B",
      "B......................................B",
@@ -127,26 +127,26 @@ levels=[
      "BSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSB",
      "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
     ],
-    ["B......................................B",
-     "B......................................B",
-     "B......................................B",
-     "B......................................B",
-     "B..P...................................B",
-     "B.###.########.........................B",
-     "B.....*lssssss.........................B",
+    ["B..................B...................B",
+     "B..................B...................B",
+     "B..................B...................B",
+     "B..................B...................B",
+     "B..P...............B...................B",
+     "B.###.#########....B...................B",
+     "B.....*lsssssss........................B",
      "B.....*l...............................B",
-     "B.....*l...............................B",
-     "B.....*l...............................B",
-     "B.....########.........................B",
-     "B.........*lss.........................B",
+     "B.....*l.C.............................B",
+     "B.....*l....................#..........B",
+     "B.....#########........................B",
+     "B.........*lsss........................B",
      "B.........*l...........................B",
-     "B.........*l...........................B",
-     "B.........*l...........................B",
-     "B.........*l...........................B",
-     "B..........###.........................B",
-     "B..E...................................B",
-     "B......................................B",
-     "B......................................B",
+     "B.........*l.........#####.............B",
+     "B.........*l.C........s................B",
+     "B.........*l....SSS....................B",
+     "B..........##########..................B",
+     "B................................S..S..B",
+     "B.........................S......####..B",
+     "B..................E....###............B",
      "BSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSB",
      "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
     ]
@@ -249,13 +249,13 @@ running=True
 player=pygame.Rect(0,0,0,0)
 
 death=False
-levelno=4
+levelno=3
 
 tblocks=[]
 timer=0
 g=5
 clock = pygame.time.Clock()
-level_finish=True
+level_finish=False
 game_over=False
 fps=20
 
@@ -302,7 +302,7 @@ def load(levelno):
             if c=="C":
                 bgtext.append(pygame.Rect(x*size,y*size,size,size))
 
-load(3)
+load(levelno)
 
 while running:
     for event in pygame.event.get():
@@ -310,6 +310,8 @@ while running:
             running=False
         if level_finish and event.type==pygame.KEYDOWN:
             if event.key==pygame.K_r:
+                if levelno==4:
+                    levelno=0
                 level_finish=False
                 load(levelno)
 
@@ -451,6 +453,7 @@ while running:
             spikes.clear()        
             lspikes.clear()
             l2spikes.clear()
+            lblocks.clear()
 
             for lf in tblocks:
                 screen.blit(blockimg,lf)    
@@ -519,6 +522,7 @@ while running:
         spikes.clear()
         lspikes.clear()
         l2spikes.clear()
+        lblocks.clear()
 
         for lf in tblocks:
             screen.blit(blockimg,lf)    
@@ -527,6 +531,18 @@ while running:
         screen.blit(lft,(290,130))
         screen.blit(nlt,(250,180))
         screen.blit(rlt,(265,230))
+
+        if levelno==4:
+            lft2= font.render("Level "+ str(levelno+1) + " complete",True,(0,0,0))
+            nlt2= font.render("You completed the game!!!",True,(0,0,0))
+            rlt2= font.render("Press R to Replay Game",True,(0,0,0))
+            for lf in tblocks:
+                screen.blit(blockimg,lf)    
+            for C in bgtext:
+                pygame.draw.rect(screen,(255,255,255),C)  
+            screen.blit(lft2,(290,130))
+            screen.blit(nlt2,(250,180))
+            screen.blit(rlt2,(265,230))
 
     pygame.display.flip()
     clock.tick(fps)
