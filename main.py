@@ -249,13 +249,13 @@ running=True
 player=pygame.Rect(0,0,0,0)
 
 death=False
-levelno=3
+levelno=4
 
 tblocks=[]
 timer=0
 g=5
 clock = pygame.time.Clock()
-level_finish=False
+level_finish=True
 game_over=False
 fps=20
 
@@ -391,9 +391,9 @@ while running:
 
         if jump:
             if (40-g*5)>0:
-                img= pygame.image.load("images/Main Characters\minja Frog\Jump (32x32).png").convert_alpha()
+                img= pygame.image.load("images/Main Characters/Jump (32x32).png").convert_alpha()
             elif (40-g*5)<0:
-                img= pygame.image.load("images/Main Characters\minja Frog\Fall (32x32).png").convert_alpha()
+                img= pygame.image.load("images/Main Characters/Fall (32x32).png").convert_alpha()
 
             player.y-=(40-g*5)
 
