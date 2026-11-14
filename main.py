@@ -275,8 +275,7 @@ lspikes=[]
 l2spikes=[]
 
 lblocks=[]
-if bgsound:
-    bgsound.play(-1)
+
 playerreturnx=0
 playerreturny=0
 
@@ -362,9 +361,7 @@ async def main():
                     timer=0
                     in_air=True
                     g=0
-                    if jumpsound:
-                        jumpsound.play()
-
+                
 
             if press[pygame.K_a] or press[pygame.K_LEFT]:
                 if not death:
@@ -410,8 +407,6 @@ async def main():
                     player.y-=75
                     g=2
                     timer=0
-                    if deathsfx:
-                        deathsfx.play()
                     player.y+=(55+g*5)
                     hp-=1
                     death=True
@@ -423,8 +418,6 @@ async def main():
                 if player.colliderect(rs) and not death:
                     g=2
                     timer=0
-                    if deathsfx:
-                        deathsfx.play()
                     player.y+=(55+g*5)
                     hp-=1
                     death=True
@@ -434,8 +427,6 @@ async def main():
                 if player.colliderect(rs) and not death:
                     g=2
                     timer=0
-                    if deathsfx:
-                        deathsfx.play()
                     player.y+=(55+g*5)
                     hp-=1
                     death=True
@@ -444,8 +435,6 @@ async def main():
                 if player.colliderect(rs) and not death:
                     g=2
                     timer=0
-                    if deathsfx:
-                        deathsfx.play()
                     player.y+=(55+g*5)
                     hp-=1
                     death=True
@@ -474,8 +463,7 @@ async def main():
                 game_over=True
             
             if timer>0.8*fps and death:
-                if revivesfx:
-                    revivesfx.play()
+
 
             if timer>fps*1.5 and death:
                 g=0
