@@ -387,7 +387,6 @@ async def main():
             for b in blocks:
                 screen.blit(blockimg,b)        
                 if player.colliderect(b):
-                    if player.bottom<=b.top+20 and player.left<=b.right+20 and player.right>=b.left-20:
                         g=0
                         player.bottom=b.top+1
                         jump=False
@@ -462,7 +461,6 @@ async def main():
                 screen.blit(rlt,(265,230))
                 game_over=True
             
-            if timer>0.8*fps and death:
 
 
             if timer>fps*1.5 and death:
