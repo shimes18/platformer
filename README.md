@@ -29,12 +29,15 @@ WHY I MADE THIS:
 >I just wanted to learn pygame and thought platformers might be the perfecet next step in my journey
 
 HOW TO ACCESS:
->Just go to shimes18.itch.io/platformer
+>Just go to https://shimes.itch.io/platformer
 
 Tools used:
 >Pygame python for making game
 >pygbag for packaging the game
 
+
+PROBLEM FACED:
+>pygbag not working and havingto change a lot of things to make it work
 
 pygbag was used to make the game playable in itch io so there are unneccessary files present here which can be ignored.
 
