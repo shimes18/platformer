@@ -7,7 +7,8 @@ AND YES ALL THE LEVELS CAN BE COMPLETED(TESTED BY ME)!!!!
 AI USAGE:
 >Google overview for syntaxes and such
 >Used a bit of ai and stack overflow to learn map making mechanism
->Debugs sometimes and minor help using pygbag
+>Debugs sometimes and help using pygbag (Made the problem worse so i had to brainstorm myself)
+
 
 Screenshots:
 After you start the game you're greeted with this 
