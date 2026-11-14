@@ -1,7 +1,10 @@
 import pygame
 import asyncio
 
+print("pygbag started")
 pygame.init()
+pygame.mixer.init()
+print("pygame initialized")
 
 size=20
 
@@ -173,7 +176,7 @@ jump=False
 
 player_img= pygame.image.load("images/Main Characters/Idle (32x32).png").convert_alpha()
 player_img = pygame.transform.scale(player_img,(23,26))
-
+print("player img loaded")
 bg= pygame.image.load("images/Background/bg2.png").convert_alpha()
 bg = pygame.transform.scale(bg,(800,450))
 
@@ -209,17 +212,25 @@ hpimg = pygame.transform.scale(hpimg,(16,13))
 endimg= pygame.image.load("images/Blocks/End.png").convert_alpha()
 endimg = pygame.transform.scale(endimg,(40,40))
 
-bgsound= pygame.mixer.Sound("sounds/bg.ogg")
-bgsound.set_volume(0.6)
-jumpsound= pygame.mixer.Sound("sounds/jump.ogg")
-jumpsound.set_volume(0.8)
+print("images loaded")
+try:
+    bgsound= pygame.mixer.Sound("sounds/bg.ogg")
+    bgsound.set_volume(0.6)
+    print("bg loaded")
+    jumpsound= pygame.mixer.Sound("sounds/jump.ogg")
+    jumpsound.set_volume(0.8)
+    print("jump loaded")
+    deathsfx= pygame.mixer.Sound("sounds/death1.ogg")
+    deathsfx.set_volume(0.8)
+    print("death loaded")
+    revivesfx= pygame.mixer.Sound("sounds/revive.ogg")
+    revivesfx.set_volume(0.8)
+    print("revive loaded")
+except Exception as e:
+    print("Sound error:",repr(e))
 
-deathsfx= pygame.mixer.Sound("sounds/death1.ogg")
-deathsfx.set_volume(0.8)
-revivesfx= pygame.mixer.Sound("sounds/revive.ogg")
-revivesfx.set_volume(0.8)
+print("sounds loaded")
 
-bgsound.play(-1)
 
 textbg=["."*40,
      "."*40,
@@ -264,7 +275,8 @@ lspikes=[]
 l2spikes=[]
 
 lblocks=[]
-
+if bgsound:
+    bgsound.play(-1)
 playerreturnx=0
 playerreturny=0
 
@@ -305,6 +317,7 @@ def load(levelno):
 
 load(levelno)
 async def main():
+    print("main function started")
     global running,in_air,rot,jump,hp,player,death,g,levelno,timer,level_finish,game_over,img
     while running:
         for event in pygame.event.get():
@@ -334,7 +347,7 @@ async def main():
                 load(levelno)
                 game_over=False
 
-
+        print("game loop running")
         timer+=1
         screen.fill((20,20,40))
         screen.blit(bg,(0,0))
@@ -349,7 +362,8 @@ async def main():
                     timer=0
                     in_air=True
                     g=0
-                    jumpsound.play()
+                    if jumpsound:
+                        jumpsound.play()
 
 
             if press[pygame.K_a] or press[pygame.K_LEFT]:
@@ -382,9 +396,6 @@ async def main():
                         jump=False
                         in_air=False
                     
-                    else:
-                        g=0
-                        player.y+=(40-g*5)+8
 
             for b in lblocks:
                 lblockimg=pygame.transform.rotate(blockimg,90)
@@ -395,12 +406,12 @@ async def main():
 
             for s in spikes:
                 screen.blit(spikeimg,s)
-                pygame.draw.rect(screen,(0,0,0),s,2)
                 if player.colliderect(s) and not death:
                     player.y-=75
                     g=2
                     timer=0
-                    deathsfx.play()
+                    if deathsfx:
+                        deathsfx.play()
                     player.y+=(55+g*5)
                     hp-=1
                     death=True
@@ -412,7 +423,8 @@ async def main():
                 if player.colliderect(rs) and not death:
                     g=2
                     timer=0
-                    deathsfx.play()
+                    if deathsfx:
+                        deathsfx.play()
                     player.y+=(55+g*5)
                     hp-=1
                     death=True
@@ -422,7 +434,8 @@ async def main():
                 if player.colliderect(rs) and not death:
                     g=2
                     timer=0
-                    deathsfx.play()
+                    if deathsfx:
+                        deathsfx.play()
                     player.y+=(55+g*5)
                     hp-=1
                     death=True
@@ -431,7 +444,8 @@ async def main():
                 if player.colliderect(rs) and not death:
                     g=2
                     timer=0
-                    deathsfx.play()
+                    if deathsfx:
+                        deathsfx.play()
                     player.y+=(55+g*5)
                     hp-=1
                     death=True
@@ -460,7 +474,8 @@ async def main():
                 game_over=True
             
             if timer>0.8*fps and death:
-                revivesfx.play()
+                if revivesfx:
+                    revivesfx.play()
 
             if timer>fps*1.5 and death:
                 g=0
@@ -499,7 +514,6 @@ async def main():
                 death=True
 
 
-            pygame.draw.rect(screen,(0,0,0),player,2)
 
             for i in range(hp):
                 screen.blit(hpimg,(i*20+1,0,20,20))
