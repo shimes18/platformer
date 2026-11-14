@@ -1,4 +1,5 @@
 import pygame
+import asyncio
 
 pygame.init()
 
@@ -170,7 +171,7 @@ bgtext=[]
 game_running=True
 jump=False
 
-player_img= pygame.image.load("images/Main Characters\Idle (32x32).png").convert_alpha()
+player_img= pygame.image.load("images/Main Characters/Idle (32x32).png").convert_alpha()
 player_img = pygame.transform.scale(player_img,(23,26))
 
 bg= pygame.image.load("images/Background/bg2.png").convert_alpha()
@@ -179,7 +180,7 @@ bg = pygame.transform.scale(bg,(800,450))
 bg2= pygame.image.load("images/Background/bg.png").convert_alpha()
 bg2 = pygame.transform.scale(bg2,(800,450))
 
-blockimg = pygame.image.load("images/Blocks/Idle.png").convert_alpha()
+blockimg = pygame.image.load("images/Blocks/idle.png").convert_alpha()
 blockimg = pygame.transform.scale(blockimg,(20,20))
 
 borderimg = pygame.image.load("images/Blocks/border.png").convert_alpha()
@@ -203,7 +204,7 @@ coinimg = pygame.image.load("images/Items/Apple.png").convert_alpha()
 coinimg = pygame.transform.scale(coinimg,(40,40))
 
 hpimg = pygame.image.load("images/Items/heart.png").convert_alpha()
-hpimg = pygame.transform.scale(hpimg,(15.75,13.5))
+hpimg = pygame.transform.scale(hpimg,(16,13))
 
 endimg= pygame.image.load("images/Blocks/End.png").convert_alpha()
 endimg = pygame.transform.scale(endimg,(40,40))
@@ -249,13 +250,13 @@ running=True
 player=pygame.Rect(0,0,0,0)
 
 death=False
-levelno=4
+levelno=0
 
 tblocks=[]
 timer=0
 g=5
 clock = pygame.time.Clock()
-level_finish=True
+level_finish=False
 game_over=False
 fps=20
 
@@ -303,154 +304,218 @@ def load(levelno):
                 bgtext.append(pygame.Rect(x*size,y*size,size,size))
 
 load(levelno)
-
-while running:
-    for event in pygame.event.get():
-        if event.type==pygame.QUIT:
-            running=False
-        if level_finish and event.type==pygame.KEYDOWN:
-            if event.key==pygame.K_r:
-                if levelno==4:
-                    levelno=0
-                level_finish=False
-                load(levelno)
-
-            if event.key==pygame.K_n:
-                levelno+=1
-                level_finish=False
-                load(levelno)
-
-            if event.unicode.isdigit():
-                    levelno= int(event.unicode)-1
+async def main():
+    global running,in_air,rot,jump,hp,player,death,g,levelno,timer,level_finish,game_over,img
+    while running:
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                running=False
+            if level_finish and event.type==pygame.KEYDOWN:
+                if event.key==pygame.K_r:
+                    if levelno==4:
+                        levelno=0
                     level_finish=False
-                    player=pygame.Rect(playerreturnx,playerreturny-10,23,26)
                     load(levelno)
-            print(levelno)
 
-        if game_over and event.type==pygame.KEYDOWN and event.key==pygame.K_r:
-            hp=5
-            load(levelno)
-            game_over=False
+                if event.key==pygame.K_n:
+                    levelno+=1
+                    level_finish=False
+                    load(levelno)
+
+                if event.unicode.isdigit():
+                        levelno= int(event.unicode)-1
+                        level_finish=False
+                        player=pygame.Rect(playerreturnx,playerreturny-10,23,26)
+                        load(levelno)
+                print(levelno)
+
+            if game_over and event.type==pygame.KEYDOWN and event.key==pygame.K_r:
+                hp=5
+                load(levelno)
+                game_over=False
 
 
-    timer+=1
-    screen.fill((20,20,40))
-    screen.blit(bg,(0,0))
-    screen.blit(bg2,(0,0))
+        timer+=1
+        screen.fill((20,20,40))
+        screen.blit(bg,(0,0))
+        screen.blit(bg2,(0,0))
 
-    if not level_finish:
-        press=pygame.key.get_pressed()
-        if press[pygame.K_w] or press[pygame.K_UP]:
-            if not in_air and not death:
-                player.y-=10
-                jump=True
-                timer=0
-                in_air=True
+        if not level_finish:
+            press=pygame.key.get_pressed()
+            if press[pygame.K_w] or press[pygame.K_UP]:
+                if not in_air and not death:
+                    player.y-=10
+                    jump=True
+                    timer=0
+                    in_air=True
+                    g=0
+                    jumpsound.play()
+
+
+            if press[pygame.K_a] or press[pygame.K_LEFT]:
+                if not death:
+                    rot="True"
+                    player.x-=9
+            if press[pygame.K_d] or press[pygame.K_RIGHT]:
+                if not death:
+                    rot="False"
+                    player.x+=9
+            
+            player.y+=g
+            g+=0.8
+
+            if rot=="True":
+                img=pygame.transform.flip(player_img,True,False)
+            else:
+                img= player_img
+
+
+            screen.blit(img,player)
+
+            in_air=True
+            for b in blocks:
+                screen.blit(blockimg,b)        
+                if player.colliderect(b):
+                    if player.bottom<=b.top+20 and player.left<=b.right+20 and player.right>=b.left-20:
+                        g=0
+                        player.bottom=b.top+1
+                        jump=False
+                        in_air=False
+                    
+                    else:
+                        g=0
+                        player.y+=(40-g*5)+8
+
+            for b in lblocks:
+                lblockimg=pygame.transform.rotate(blockimg,90)
+                screen.blit(lblockimg,b)
+
+            if jump:
+                player.y-=(40-g*5)
+
+            for s in spikes:
+                screen.blit(spikeimg,s)
+                pygame.draw.rect(screen,(0,0,0),s,2)
+                if player.colliderect(s) and not death:
+                    player.y-=75
+                    g=2
+                    timer=0
+                    deathsfx.play()
+                    player.y+=(55+g*5)
+                    hp-=1
+                    death=True
+                    
+
+
+            for rs in rspikes:
+                screen.blit(rspikeimg,rs)
+                if player.colliderect(rs) and not death:
+                    g=2
+                    timer=0
+                    deathsfx.play()
+                    player.y+=(55+g*5)
+                    hp-=1
+                    death=True
+
+            for rs in lspikes:
+                screen.blit(lspikeimg,rs)
+                if player.colliderect(rs) and not death:
+                    g=2
+                    timer=0
+                    deathsfx.play()
+                    player.y+=(55+g*5)
+                    hp-=1
+                    death=True
+            for rs in l2spikes:
+                screen.blit(l2spikeimg,rs)
+                if player.colliderect(rs) and not death:
+                    g=2
+                    timer=0
+                    deathsfx.play()
+                    player.y+=(55+g*5)
+                    hp-=1
+                    death=True
+
+            if hp<=0:
+                levelno=0        
+                lft= font.render("You died",True,(0,0,0))
+                rlt= font.render("Press R to Restart",True,(0,0,0))
+                rspikes.clear()
+                blocks.clear()
+                end.clear()
+                border.clear()
+                coins.clear()
+                start.clear()
+                spikes.clear()        
+                lspikes.clear()
+                l2spikes.clear()
+                lblocks.clear()
+
+                for lf in tblocks:
+                    screen.blit(blockimg,lf)    
+                for C in bgtext:
+                    pygame.draw.rect(screen,(255,255,255),C)  
+                screen.blit(lft,(290,130))
+                screen.blit(rlt,(265,230))
+                game_over=True
+            
+            if timer>0.8*fps and death:
+                revivesfx.play()
+
+            if timer>fps*1.5 and death:
                 g=0
-                jumpsound.play()
+                player=pygame.Rect(playerreturnx,playerreturny-10,23,26)
+                g=0
+                death=False
 
 
-        if press[pygame.K_a] or press[pygame.K_LEFT]:
-            if not death:
-                rot="True"
-                player.x-=9
-        if press[pygame.K_d] or press[pygame.K_RIGHT]:
-            if not death:
-                rot="False"
-                player.x+=9
-        
-        player.y+=g
-        g+=0.8
 
-        if rot=="True":
-            img=pygame.transform.flip(player_img,True,False)
-        else:
-            img= player_img
+            for st in start:
+                screen.blit(startimg,st)
 
+            for c in coins:
+                screen.blit(coinimg,(c.x-10,c.y,c.h,c.w))
+                if player.colliderect(c):
+                    print("TRUE")
+                    c.x=1000
+                    hp+=1
 
-        screen.blit(img,player)
+            for e in end:
+                screen.blit(endimg,e)
+                if player.colliderect(e):
+                    level_finish=True
 
-        in_air=True
-        for b in blocks:
-            screen.blit(blockimg,b)        
-            if player.colliderect((b.x,b.y,b.h,b.w)):
-                if player.bottom<=b.top+20 and player.left<=b.right+20 and player.right>=b.left-20:
-                    g=0
-                    player.bottom=b.top+1
-                    jump=False
-                    in_air=False
-                    img= pygame.image.load("images/Main Characters/Idle (32x32).png").convert_alpha()
+            for b in border:
+                screen.blit(borderimg,b)
+                if player.colliderect(b):
+                    if player.x>300: 
+                        player.x-=5
+                    elif player.x<200:
+                        player.x+=5
+                    elif player.y<200:
+                        player.y+=5
 
-                else:
-                    g=0
-                    player.y+=(40-g*5)+8
-
-        for b in lblocks:
-            lblockimg=pygame.transform.rotate(blockimg,90)
-            screen.blit(lblockimg,b)
-
-        if jump:
-            if (40-g*5)>0:
-                img= pygame.image.load("images/Main Characters/Jump (32x32).png").convert_alpha()
-            elif (40-g*5)<0:
-                img= pygame.image.load("images/Main Characters/Fall (32x32).png").convert_alpha()
-
-            player.y-=(40-g*5)
-
-        for s in spikes:
-            screen.blit(spikeimg,s)
-            pygame.draw.rect(screen,(0,0,0),s,2)
-            if player.colliderect(s) and not death:
-                player.y-=75
-                g=2
-                timer=0
-                deathsfx.play()
-                player.y+=(55+g*5)
-                hp-=1
-                death=True
-                
-
-
-        for rs in rspikes:
-            screen.blit(rspikeimg,rs)
-            if player.colliderect(rs) and not death:
-                g=2
-                timer=0
-                deathsfx.play()
-                player.y+=(55+g*5)
-                hp-=1
+            if player.y>2050:
                 death=True
 
-        for rs in lspikes:
-            screen.blit(lspikeimg,rs)
-            if player.colliderect(rs) and not death:
-                g=2
-                timer=0
-                deathsfx.play()
-                player.y+=(55+g*5)
-                hp-=1
-                death=True
-        for rs in l2spikes:
-            screen.blit(l2spikeimg,rs)
-            if player.colliderect(rs) and not death:
-                g=2
-                timer=0
-                deathsfx.play()
-                player.y+=(55+g*5)
-                hp-=1
-                death=True
 
-        if hp<=0:
-            levelno=0        
-            lft= font.render("You died",True,(0,0,0))
-            rlt= font.render("Press R to Restart",True,(0,0,0))
+            pygame.draw.rect(screen,(0,0,0),player,2)
+
+            for i in range(hp):
+                screen.blit(hpimg,(i*20+1,0,20,20))
+            
+
+        if level_finish:
+            lft= font.render("Level "+ str(levelno+1) + " complete",True,(0,0,0))
+            nlt= font.render("Press N to go to next level",True,(0,0,0))
+            rlt= font.render("Press R to Replay level",True,(0,0,0))
             rspikes.clear()
             blocks.clear()
             end.clear()
             border.clear()
             coins.clear()
             start.clear()
-            spikes.clear()        
+            spikes.clear()
             lspikes.clear()
             l2spikes.clear()
             lblocks.clear()
@@ -460,90 +525,23 @@ while running:
             for C in bgtext:
                 pygame.draw.rect(screen,(255,255,255),C)  
             screen.blit(lft,(290,130))
+            screen.blit(nlt,(250,180))
             screen.blit(rlt,(265,230))
-            game_over=True
-        
-        if timer>0.8*fps and death:
-            revivesfx.play()
 
-        if timer>fps*1.5 and death:
-            g=0
-            player=pygame.Rect(playerreturnx,playerreturny-10,23,26)
-            g=0
-            death=False
+            if levelno==4:
+                lft2= font.render("Level "+ str(levelno+1) + " complete",True,(0,0,0))
+                nlt2= font.render("You completed the game!!!",True,(0,0,0))
+                rlt2= font.render("Press R to Replay Game",True,(0,0,0))
+                for lf in tblocks:
+                    screen.blit(blockimg,lf)    
+                for C in bgtext:
+                    pygame.draw.rect(screen,(255,255,255),C)  
+                screen.blit(lft2,(290,130))
+                screen.blit(nlt2,(250,180))
+                screen.blit(rlt2,(265,230))
 
+        pygame.display.flip()
+        clock.tick(fps)
+        await asyncio.sleep(0)
 
-
-        for st in start:
-            screen.blit(startimg,st)
-
-        for c in coins:
-            screen.blit(coinimg,(c.x-10,c.y,c.h,c.w))
-            if player.colliderect(c):
-                print("TRUE")
-                c.x=1000
-                hp+=1
-
-        for e in end:
-            screen.blit(endimg,e)
-            if player.colliderect(e):
-                level_finish=True
-
-        for b in border:
-            screen.blit(borderimg,b)
-            if player.colliderect(b):
-                if player.x>300: 
-                    player.x-=5
-                elif player.x<200:
-                    player.x+=5
-                elif player.y<200:
-                    player.y+=5
-
-        if player.y>2050:
-            death=True
-
-
-        pygame.draw.rect(screen,(0,0,0),player,2)
-
-        for i in range(hp):
-            screen.blit(hpimg,(i*20+1,0,20,20))
-        
-
-    if level_finish:
-        lft= font.render("Level "+ str(levelno+1) + " complete",True,(0,0,0))
-        nlt= font.render("Press N to go to next level",True,(0,0,0))
-        rlt= font.render("Press R to Replay level",True,(0,0,0))
-        rspikes.clear()
-        blocks.clear()
-        end.clear()
-        border.clear()
-        coins.clear()
-        start.clear()
-        spikes.clear()
-        lspikes.clear()
-        l2spikes.clear()
-        lblocks.clear()
-
-        for lf in tblocks:
-            screen.blit(blockimg,lf)    
-        for C in bgtext:
-            pygame.draw.rect(screen,(255,255,255),C)  
-        screen.blit(lft,(290,130))
-        screen.blit(nlt,(250,180))
-        screen.blit(rlt,(265,230))
-
-        if levelno==4:
-            lft2= font.render("Level "+ str(levelno+1) + " complete",True,(0,0,0))
-            nlt2= font.render("You completed the game!!!",True,(0,0,0))
-            rlt2= font.render("Press R to Replay Game",True,(0,0,0))
-            for lf in tblocks:
-                screen.blit(blockimg,lf)    
-            for C in bgtext:
-                pygame.draw.rect(screen,(255,255,255),C)  
-            screen.blit(lft2,(290,130))
-            screen.blit(nlt2,(250,180))
-            screen.blit(rlt2,(265,230))
-
-    pygame.display.flip()
-    clock.tick(fps)
-pygame.quit()
+asyncio.run(main())

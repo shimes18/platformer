@@ -7,7 +7,7 @@ AND YES ALL THE LEVELS CAN BE COMPLETED(TESTED BY ME)!!!!
 AI USAGE:
 >Google overview for syntaxes and such
 >Used a bit of ai and stack overflow to learn map making mechanism
->Debugs sometimes
+>Debugs sometimes and minor help using pygbag
 
 Screenshots:
 After you start the game you're greeted with this 
@@ -29,10 +29,14 @@ WHY I MADE THIS:
 >I just wanted to learn pygame and thought platformers might be the perfecet next step in my journey
 
 HOW TO ACCESS:
->Just go to shimes18.itch.io/platformers
+>Just go to shimes18.itch.io/platformer
+
+Tools used:
+>Pygame python for making game
+>pygbag for packaging the game
 
 
-Pygbag was used to make the game playable in itch io so there are unneccessary files present here which can be ignored.
+pygbag was used to make the game playable in itch io so there are unneccessary files present here which can be ignored.
 
 
 Assets used:
