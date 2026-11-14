@@ -1,10 +1,8 @@
 import pygame
 import asyncio
 
-print("pygbag started")
 pygame.init()
 pygame.mixer.init()
-print("pygame initialized")
 
 size=20
 
@@ -176,7 +174,6 @@ jump=False
 
 player_img= pygame.image.load("images/Main Characters/Idle (32x32).png").convert_alpha()
 player_img = pygame.transform.scale(player_img,(23,26))
-print("player img loaded")
 bg= pygame.image.load("images/Background/bg2.png").convert_alpha()
 bg = pygame.transform.scale(bg,(800,450))
 
@@ -212,24 +209,18 @@ hpimg = pygame.transform.scale(hpimg,(16,13))
 endimg= pygame.image.load("images/Blocks/End.png").convert_alpha()
 endimg = pygame.transform.scale(endimg,(40,40))
 
-print("images loaded")
 try:
     bgsound= pygame.mixer.Sound("sounds/bg.ogg")
     bgsound.set_volume(0.6)
-    print("bg loaded")
     jumpsound= pygame.mixer.Sound("sounds/jump.ogg")
     jumpsound.set_volume(0.8)
-    print("jump loaded")
     deathsfx= pygame.mixer.Sound("sounds/death1.ogg")
     deathsfx.set_volume(0.8)
-    print("death loaded")
     revivesfx= pygame.mixer.Sound("sounds/revive.ogg")
     revivesfx.set_volume(0.8)
-    print("revive loaded")
 except Exception as e:
     print("Sound error:",repr(e))
 
-print("sounds loaded")
 
 
 textbg=["."*40,
@@ -316,7 +307,6 @@ def load(levelno):
 
 load(levelno)
 async def main():
-    print("main function started")
     global running,in_air,rot,jump,hp,player,death,g,levelno,timer,level_finish,game_over,img
     while running:
         for event in pygame.event.get():
@@ -339,14 +329,12 @@ async def main():
                         level_finish=False
                         player=pygame.Rect(playerreturnx,playerreturny-10,23,26)
                         load(levelno)
-                print(levelno)
 
             if game_over and event.type==pygame.KEYDOWN and event.key==pygame.K_r:
                 hp=5
                 load(levelno)
                 game_over=False
 
-        print("game loop running")
         timer+=1
         screen.fill((20,20,40))
         screen.blit(bg,(0,0))
@@ -477,7 +465,6 @@ async def main():
             for c in coins:
                 screen.blit(coinimg,(c.x-10,c.y,c.h,c.w))
                 if player.colliderect(c):
-                    print("TRUE")
                     c.x=1000
                     hp+=1
 
